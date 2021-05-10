@@ -35,3 +35,40 @@ type Pkg struct {
 	License        []string `json:"License"`
 	Keywords       []string `json:"Keywords"`
 }
+
+// By specifies what to seach by in RPC searches.
+type By int
+
+const (
+	Name By = iota + 1
+	NameDesc
+	Maintainer
+	Depends
+	MakeDepends
+	OptDepends
+	CheckDepends
+	None
+)
+
+func (by By) String() string {
+	switch by {
+	case Name:
+		return "name"
+	case NameDesc:
+		return "name-desc"
+	case Maintainer:
+		return "maintainer"
+	case Depends:
+		return "depends"
+	case MakeDepends:
+		return "makedepends"
+	case OptDepends:
+		return "optdepends"
+	case CheckDepends:
+		return "checkdepends"
+	case None:
+		return ""
+	default:
+		panic("invalid By")
+	}
+}

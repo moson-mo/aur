@@ -3,10 +3,16 @@ package aur
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
+)
+
+var (
+	// ErrServiceUnavailable represents a error when AUR is unavailable.
+	ErrServiceUnavailable = errors.New("AUR is unavailable at this moment")
 )
 
 type PayloadError struct {
@@ -142,6 +148,14 @@ func newAURRPCRequest(ctx context.Context, baseURL string, values url.Values) (*
 	}
 
 	return req, nil
+}
+
+func getErrorByStatusCode(code int) error {
+	switch code {
+	case http.StatusBadGateway, http.StatusGatewayTimeout, http.StatusServiceUnavailable:
+		return ErrServiceUnavailable
+	}
+	return nil
 }
 
 func parseRPCResponse(resp *http.Response) ([]Pkg, error) {

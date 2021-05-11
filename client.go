@@ -38,7 +38,7 @@ type ClientInterface interface {
 
 // Client for AUR searching and querying.
 type Client struct {
-	baseURL string
+	BaseURL string
 
 	// Doer for performing requests, typically a *http.Client with any
 	// customized settings, such as certificate chains.
@@ -64,7 +64,7 @@ type RequestEditorFn func(ctx context.Context, req *http.Request) error
 
 func NewClient(opts ...ClientOption) (*Client, error) {
 	client := Client{
-		baseURL:        _defaultURL,
+		BaseURL:        _defaultURL,
 		HTTPClient:     nil,
 		RequestEditors: []RequestEditorFn{},
 	}
@@ -82,13 +82,13 @@ func NewClient(opts ...ClientOption) (*Client, error) {
 	}
 
 	// ensure base URL has /rpc.php?
-	if !strings.HasSuffix(client.baseURL, "rpc.php?") {
+	if !strings.HasSuffix(client.BaseURL, "rpc.php?") {
 		// ensure the server URL always has a trailing slash
-		if !strings.HasSuffix(client.baseURL, "/") {
-			client.baseURL += "/"
+		if !strings.HasSuffix(client.BaseURL, "/") {
+			client.BaseURL += "/"
 		}
 
-		client.baseURL += "rpc.php?"
+		client.BaseURL += "rpc.php?"
 	}
 
 	return &client, nil
@@ -107,7 +107,7 @@ func WithHTTPClient(doer HTTPRequestDoer) ClientOption {
 // WithBaseURL allows overriding the default base URL of the client,
 func WithBaseURL(baseURL string) ClientOption {
 	return func(c *Client) error {
-		c.baseURL = baseURL
+		c.BaseURL = baseURL
 
 		return nil
 	}
@@ -208,7 +208,7 @@ func (c *Client) Info(ctx context.Context, pkgs []string, reqEditors ...RequestE
 }
 
 func (c *Client) get(ctx context.Context, values url.Values, reqEditors []RequestEditorFn) ([]Pkg, error) {
-	req, err := newAURRPCRequest(ctx, c.baseURL, values)
+	req, err := newAURRPCRequest(ctx, c.BaseURL, values)
 	if err != nil {
 		return nil, err
 	}

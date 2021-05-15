@@ -184,9 +184,7 @@ func parseRPCResponse(resp *http.Response) ([]Pkg, error) {
 // Search queries the AUR DB with an optional By field.
 // Use By.None for default query param (name-desc)
 func (c *Client) Search(ctx context.Context, query string, by By, reqEditors ...RequestEditorFn) ([]Pkg, error) {
-	v := url.Values{}
-	v.Set("type", "search")
-	v.Set("arg", query)
+	v := url.Values{"type": []string{"search"}, "arg": []string{query}}
 
 	if by != None {
 		v.Set("by", by.String())
@@ -197,12 +195,7 @@ func (c *Client) Search(ctx context.Context, query string, by By, reqEditors ...
 
 // Info shows info for one or multiple packages.
 func (c *Client) Info(ctx context.Context, pkgs []string, reqEditors ...RequestEditorFn) ([]Pkg, error) {
-	v := url.Values{}
-	v.Set("type", "info")
-
-	for _, arg := range pkgs {
-		v.Add("arg[]", arg)
-	}
+	v := url.Values{"type": []string{"info"}, "arg[]": pkgs}
 
 	return c.get(ctx, v, reqEditors)
 }

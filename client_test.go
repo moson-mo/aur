@@ -54,14 +54,16 @@ const validPayload = `{
  }
 `
 
-var validPayloadItems = []Pkg{{ID: 229417, Name: "cower", PackageBaseID: 44921,
+var validPayloadItems = []Pkg{{
+	ID: 229417, Name: "cower", PackageBaseID: 44921,
 	PackageBase: "cower", Version: "14-2", Description: "A simple AUR agent with a pretentious name",
 	URL: "http://github.com/falconindy/cower", NumVotes: 590, Popularity: 24.595536, OutOfDate: 0,
 	Maintainer: "falconindy", FirstSubmitted: 1293676237, LastModified: 1441804093,
 	URLPath: "/cgit/aur.git/snapshot/cower.tar.gz", Depends: []string{"curl", "openssl", "pacman", "yajl"},
 	MakeDepends: []string{"perl"}, CheckDepends: []string(nil), Conflicts: []string(nil),
 	Provides: []string(nil), Replaces: []string(nil), OptDepends: []string(nil),
-	Groups: []string(nil), License: []string{"MIT"}, Keywords: []string{}}}
+	Groups: []string(nil), License: []string{"MIT"}, Keywords: []string{},
+}}
 
 func TestNewClient(t *testing.T) {
 	newHTTPClient := &http.Client{}
@@ -160,7 +162,8 @@ func Test_parseRPCResponse(t *testing.T) {
 			name: "service unavailable",
 			args: args{resp: &http.Response{
 				StatusCode: 503,
-				Body:       ioutil.NopCloser(bytes.NewBufferString("{}"))}},
+				Body:       ioutil.NopCloser(bytes.NewBufferString("{}")),
+			}},
 			want:       []Pkg{},
 			wantErr:    true,
 			wantErrMsg: "AUR is unavailable at this moment",
@@ -169,7 +172,8 @@ func Test_parseRPCResponse(t *testing.T) {
 			name: "ok empty body",
 			args: args{resp: &http.Response{
 				StatusCode: 200,
-				Body:       ioutil.NopCloser(bytes.NewBufferString("{}"))}},
+				Body:       ioutil.NopCloser(bytes.NewBufferString("{}")),
+			}},
 			want:       nil,
 			wantErr:    false,
 			wantErrMsg: "",
@@ -178,7 +182,8 @@ func Test_parseRPCResponse(t *testing.T) {
 			name: "ok empty body",
 			args: args{resp: &http.Response{
 				StatusCode: 200,
-				Body:       ioutil.NopCloser(bytes.NewBufferString("{}"))}},
+				Body:       ioutil.NopCloser(bytes.NewBufferString("{}")),
+			}},
 			want:       nil,
 			wantErr:    false,
 			wantErrMsg: "",
@@ -187,7 +192,8 @@ func Test_parseRPCResponse(t *testing.T) {
 			name: "payload error",
 			args: args{resp: &http.Response{
 				StatusCode: 400,
-				Body:       ioutil.NopCloser(bytes.NewBufferString(errorPayload))}},
+				Body:       ioutil.NopCloser(bytes.NewBufferString(errorPayload)),
+			}},
 			want:       nil,
 			wantErr:    true,
 			wantErrMsg: "status 400: Incorrect by field specified.",
@@ -196,7 +202,8 @@ func Test_parseRPCResponse(t *testing.T) {
 			name: "valid payload",
 			args: args{resp: &http.Response{
 				StatusCode: 200,
-				Body:       ioutil.NopCloser(bytes.NewBufferString(validPayload))}},
+				Body:       ioutil.NopCloser(bytes.NewBufferString(validPayload)),
+			}},
 			want:       validPayloadItems,
 			wantErr:    false,
 			wantErrMsg: "",
@@ -282,7 +289,6 @@ func (m *MockedClient) Do(req *http.Request) (*http.Response, error) {
 	args := m.Called(req)
 
 	return args.Get(0).(*http.Response), args.Error(1)
-
 }
 
 func TestClient_Search(t *testing.T) {
@@ -296,7 +302,8 @@ func TestClient_Search(t *testing.T) {
 
 	testClient.On("Do", mock.Anything).Return(&http.Response{
 		StatusCode: 200,
-		Body:       ioutil.NopCloser(bytes.NewBufferString(validPayload))}, nil)
+		Body:       ioutil.NopCloser(bytes.NewBufferString(validPayload)),
+	}, nil)
 
 	got, err := c.Search(context.Background(), "test", Name)
 
@@ -323,7 +330,8 @@ func TestClient_Info(t *testing.T) {
 
 	testClient.On("Do", mock.Anything).Return(&http.Response{
 		StatusCode: 200,
-		Body:       ioutil.NopCloser(bytes.NewBufferString(validPayload))}, nil)
+		Body:       ioutil.NopCloser(bytes.NewBufferString(validPayload)),
+	}, nil)
 
 	got, err := c.Info(context.Background(), []string{"test"})
 
@@ -350,7 +358,8 @@ func TestClient_InfoNoMatch(t *testing.T) {
 
 	testClient.On("Do", mock.Anything).Return(&http.Response{
 		StatusCode: 200,
-		Body:       ioutil.NopCloser(bytes.NewBufferString(noMatchPayload))}, nil)
+		Body:       ioutil.NopCloser(bytes.NewBufferString(noMatchPayload)),
+	}, nil)
 
 	got, err := c.Info(context.Background(), []string{"test"})
 
@@ -377,7 +386,8 @@ func TestClient_InfoError(t *testing.T) {
 
 	testClient.On("Do", mock.Anything).Return(&http.Response{
 		StatusCode: 503,
-		Body:       ioutil.NopCloser(bytes.NewBufferString(errorPayload))}, nil)
+		Body:       ioutil.NopCloser(bytes.NewBufferString(errorPayload)),
+	}, nil)
 
 	_, err := c.Info(context.Background(), []string{"test"})
 

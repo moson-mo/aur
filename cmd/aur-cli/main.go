@@ -17,8 +17,8 @@ const (
 	resetCode = "\x1b[0m"
 )
 
-// UseColor determines if package will emit colors
-var UseColor = true
+// UseColor determines if package will emit colors.
+var UseColor = true // nolint
 
 func getSearchBy(value string) aur.By {
 	switch value {
@@ -70,27 +70,17 @@ func main() {
 		os.Exit(1)
 	}
 
-	aurClient, err := aur.NewClient(aur.WithRequestEditorFn(func(ctx context.Context, req *http.Request) error {
-		req.Header.Add("User-Agent", "aur-cli/v1")
+	aurClient, err := aur.NewClient(aur.WithBaseURL(aurURL),
+		aur.WithRequestEditorFn(func(ctx context.Context, req *http.Request) error {
+			req.Header.Add("User-Agent", "aur-cli/v1")
 
-		return nil
-	}), aur.WithBaseURL(aurURL))
-
+			return nil
+		}))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
 
-	var results []aur.Pkg
-	if flag.Arg(0) == "search" {
-		results, err = aurClient.Search(context.Background(), strings.Join(flag.Args()[1:], " "), getSearchBy(by))
-	} else if flag.Arg(0) == "info" {
-		results, err = aurClient.Info(context.Background(), flag.Args()[1:])
-	} else {
-		usage()
-
-		os.Exit(1)
-	}
-
+	results, err := fn0(aurClient, by)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 
@@ -106,13 +96,29 @@ func main() {
 		}
 
 		fmt.Println(string(output))
-
 	} else {
-		for _, pkg := range results {
-			printInfo(&pkg, aurURL, verbose, flag.Arg(0))
+		for i := range results {
+			printInfo(&results[i], aurURL, verbose, flag.Arg(0))
 		}
 	}
+}
 
+func fn0(aurClient *aur.Client, by string) (results []aur.Pkg, err error) {
+	switch flag.Arg(0) {
+	case "search":
+		results, err = aurClient.Search(context.Background(), strings.Join(flag.Args()[1:], " "), getSearchBy(by))
+	case "info":
+		results, err = aurClient.Info(context.Background(), flag.Args()[1:])
+	default:
+		usage()
+		os.Exit(1)
+	}
+
+	if err != nil {
+		err = fmt.Errorf("rpc request failed: %w", err)
+	}
+
+	return results, err
 }
 
 func stylize(startCode, in string) string {
@@ -122,6 +128,7 @@ func stylize(startCode, in string) string {
 
 	return in
 }
+
 func Bold(in string) string {
 	return stylize(boldCode, in)
 }
@@ -147,6 +154,7 @@ func printInfo(a *aur.Pkg, aurURL string, verbose bool, mode string) {
 			printInfoValue("Optional Deps", a.OptDepends...)
 			printInfoValue("Conflicts With", a.Conflicts...)
 		}
+
 		printInfoValue("Maintainer", a.Maintainer)
 		printInfoValue("Votes", fmt.Sprintf("%d", a.NumVotes))
 		printInfoValue("Popularity", fmt.Sprintf("%f", a.Popularity))

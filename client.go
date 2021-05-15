@@ -10,10 +10,8 @@ import (
 	"strings"
 )
 
-var (
-	// ErrServiceUnavailable represents a error when AUR is unavailable.
-	ErrServiceUnavailable = errors.New("AUR is unavailable at this moment")
-)
+// ErrServiceUnavailable represents a error when AUR is unavailable.
+var ErrServiceUnavailable = errors.New("AUR is unavailable at this moment")
 
 type PayloadError struct {
 	StatusCode int
@@ -26,7 +24,7 @@ func (r *PayloadError) Error() string {
 
 const _defaultURL = "https://aur.archlinux.org/rpc.php?"
 
-// The interface specification for the client above.
+// ClientInterface specification for the AUR client.
 type ClientInterface interface {
 	// Search queries the AUR DB with an optional By filter.
 	// Use By.None for default query param (name-desc)
@@ -52,8 +50,7 @@ type Client struct {
 // ClientOption allows setting custom parameters during construction.
 type ClientOption func(*Client) error
 
-// Doer performs HTTP requests.
-//
+// HTTPRequestDoer performs HTTP requests.
 // The standard http.Client implements this interface.
 type HTTPRequestDoer interface {
 	Do(req *http.Request) (*http.Response, error)
@@ -104,7 +101,7 @@ func WithHTTPClient(doer HTTPRequestDoer) ClientOption {
 	}
 }
 
-// WithBaseURL allows overriding the default base URL of the client,
+// WithBaseURL allows overriding the default base URL of the client.
 func WithBaseURL(baseURL string) ClientOption {
 	return func(c *Client) error {
 		c.BaseURL = baseURL
@@ -155,6 +152,7 @@ func getErrorByStatusCode(code int) error {
 	case http.StatusBadGateway, http.StatusGatewayTimeout, http.StatusServiceUnavailable:
 		return ErrServiceUnavailable
 	}
+
 	return nil
 }
 
@@ -182,7 +180,7 @@ func parseRPCResponse(resp *http.Response) ([]Pkg, error) {
 }
 
 // Search queries the AUR DB with an optional By field.
-// Use By.None for default query param (name-desc)
+// Use By.None for default query param (name-desc).
 func (c *Client) Search(ctx context.Context, query string, by By, reqEditors ...RequestEditorFn) ([]Pkg, error) {
 	v := url.Values{"type": []string{"search"}, "arg": []string{query}}
 
@@ -206,8 +204,8 @@ func (c *Client) get(ctx context.Context, values url.Values, reqEditors []Reques
 		return nil, err
 	}
 
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
+	if errApply := c.applyEditors(ctx, req, reqEditors); errApply != nil {
+		return nil, errApply
 	}
 
 	resp, err := c.HTTPClient.Do(req)

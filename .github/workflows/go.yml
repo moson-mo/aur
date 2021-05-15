@@ -1,12 +1,22 @@
 name: Go
 on: [push]
 jobs:
-  build:
-    name: Build
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: latest
+  test:
+    name: Test
     strategy:
       matrix:
-        go: ["^1.16", "1.14", "1.13"]
+        go: ["^1.16"]
+        os: [macos-latest, windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-go@v2

@@ -8,7 +8,7 @@ type response struct {
 	Results     []Pkg  `json:"results"`
 }
 
-// Pkg holds package information
+// Pkg holds package information.
 type Pkg struct {
 	ID             int      `json:"ID"`
 	Name           string   `json:"Name"`
@@ -36,7 +36,7 @@ type Pkg struct {
 	Keywords       []string `json:"Keywords"`
 }
 
-// By specifies what to seach by in RPC searches.
+// By specifies what to search by in RPC searches.
 type By int
 
 const (

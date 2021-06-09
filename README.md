@@ -10,6 +10,12 @@ Fork of [aur](https://github.com/mikkeloscar/aur) with the following differences
 
 ## aur-cli
 
+### Install
+
+```
+go get github.com/Jguer/aur/aur-cli
+```
+
 Client for simple AUR queries.
 
 **Examples**:

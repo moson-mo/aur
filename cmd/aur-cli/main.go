@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"strings"
@@ -19,6 +20,11 @@ const (
 
 // UseColor determines if package will emit colors.
 var UseColor = true // nolint
+
+const (
+	searchMode = "search"
+	infoMode   = "info"
+)
 
 func getSearchBy(value string) aur.By {
 	switch value {
@@ -70,6 +76,7 @@ func main() {
 		os.Exit(1)
 	}
 
+	mode := flag.Arg(0)
 	aurClient, err := aur.NewClient(aur.WithBaseURL(aurURL),
 		aur.WithRequestEditorFn(func(ctx context.Context, req *http.Request) error {
 			req.Header.Add("User-Agent", "aur-cli/v1")
@@ -80,7 +87,7 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 	}
 
-	results, err := fn0(aurClient, by)
+	results, err := getResults(aurClient, by, mode)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 
@@ -98,16 +105,24 @@ func main() {
 		fmt.Println(string(output))
 	} else {
 		for i := range results {
-			printInfo(&results[i], aurURL, verbose, flag.Arg(0))
+			switch mode {
+			case infoMode:
+				printInfo(&results[i], os.Stdout, aurURL, verbose)
+			case searchMode:
+				printSearch(&results[i], os.Stdout)
+			default:
+				usage()
+				os.Exit(1)
+			}
 		}
 	}
 }
 
-func fn0(aurClient *aur.Client, by string) (results []aur.Pkg, err error) {
-	switch flag.Arg(0) {
-	case "search":
+func getResults(aurClient *aur.Client, by, mode string) (results []aur.Pkg, err error) {
+	switch mode {
+	case searchMode:
 		results, err = aurClient.Search(context.Background(), strings.Join(flag.Args()[1:], " "), getSearchBy(by))
-	case "info":
+	case infoMode:
 		results, err = aurClient.Info(context.Background(), flag.Args()[1:])
 	default:
 		usage()
@@ -133,45 +148,48 @@ func Bold(in string) string {
 	return stylize(boldCode, in)
 }
 
+func printSearch(a *aur.Pkg, w io.Writer) {
+	fmt.Fprintf(w, "- %s %s (%d %.2f)\n\t%s\n",
+		Bold(a.Name), a.Version, a.NumVotes, a.Popularity, a.Description)
+}
+
 // PrintInfo prints package info like pacman -Si.
-func printInfo(a *aur.Pkg, aurURL string, verbose bool, mode string) {
-	printInfoValue("Name", a.Name)
-	printInfoValue("Version", a.Version)
-	printInfoValue("Description", a.Description)
+func printInfo(a *aur.Pkg, w io.Writer, aurURL string, verbose bool) {
+	printInfoValue(w, "Name", a.Name)
+	printInfoValue(w, "Version", a.Version)
+	printInfoValue(w, "Description", a.Description)
 
 	if verbose {
-		printInfoValue("Keywords", a.Keywords...)
-		printInfoValue("URL", a.URL)
-		printInfoValue("AUR URL", strings.TrimRight(aurURL, "/")+"/packages/"+a.Name)
+		printInfoValue(w, "Keywords", a.Keywords...)
+		printInfoValue(w, "URL", a.URL)
+		printInfoValue(w, "AUR URL", strings.TrimRight(aurURL, "/")+"/packages/"+a.Name)
 
-		if mode == "info" {
-			printInfoValue("Groups", a.Groups...)
-			printInfoValue("Licenses", a.License...)
-			printInfoValue("Provides", a.Provides...)
-			printInfoValue("Depends On", a.Depends...)
-			printInfoValue("Make Deps", a.MakeDepends...)
-			printInfoValue("Check Deps", a.CheckDepends...)
-			printInfoValue("Optional Deps", a.OptDepends...)
-			printInfoValue("Conflicts With", a.Conflicts...)
-		}
+		printInfoValue(w, "Groups", a.Groups...)
+		printInfoValue(w, "Licenses", a.License...)
+		printInfoValue(w, "Provides", a.Provides...)
+		printInfoValue(w, "Depends On", a.Depends...)
+		printInfoValue(w, "Make Deps", a.MakeDepends...)
+		printInfoValue(w, "Check Deps", a.CheckDepends...)
+		printInfoValue(w, "Optional Deps", a.OptDepends...)
+		printInfoValue(w, "Conflicts With", a.Conflicts...)
 
-		printInfoValue("Maintainer", a.Maintainer)
-		printInfoValue("Votes", fmt.Sprintf("%d", a.NumVotes))
-		printInfoValue("Popularity", fmt.Sprintf("%f", a.Popularity))
-		printInfoValue("First Submitted", formatTimeQuery(a.FirstSubmitted))
-		printInfoValue("Last Modified", formatTimeQuery(a.LastModified))
+		printInfoValue(w, "Maintainer", a.Maintainer)
+		printInfoValue(w, "Votes", fmt.Sprintf("%d", a.NumVotes))
+		printInfoValue(w, "Popularity", fmt.Sprintf("%f", a.Popularity))
+		printInfoValue(w, "First Submitted", formatTimeQuery(a.FirstSubmitted))
+		printInfoValue(w, "Last Modified", formatTimeQuery(a.LastModified))
 
 		if a.OutOfDate != 0 {
-			printInfoValue("Out-of-date", formatTimeQuery(a.OutOfDate))
+			printInfoValue(w, "Out-of-date", formatTimeQuery(a.OutOfDate))
 		} else {
-			printInfoValue("Out-of-date", "No")
+			printInfoValue(w, "Out-of-date", "No")
 		}
 
-		printInfoValue("ID", fmt.Sprintf("%d", a.ID))
-		printInfoValue("Package Base ID", fmt.Sprintf("%d", a.PackageBaseID))
-		printInfoValue("Package Base", a.PackageBase)
-		printInfoValue("Snapshot URL", aurURL+a.URLPath)
+		printInfoValue(w, "ID", fmt.Sprintf("%d", a.ID))
+		printInfoValue(w, "Package Base ID", fmt.Sprintf("%d", a.PackageBaseID))
+		printInfoValue(w, "Package Base", a.PackageBase)
+		printInfoValue(w, "Snapshot URL", aurURL+a.URLPath)
 	}
 
-	fmt.Println()
+	fmt.Fprintln(w)
 }

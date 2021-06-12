@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -26,7 +27,7 @@ func getColumnCount() int {
 	return defaultColumnCount
 }
 
-func printInfoValue(key string, values ...string) {
+func printInfoValue(w io.Writer, key string, values ...string) {
 	// 16 (text) + 1 (:) + 1 ( )
 	const (
 		keyLength  = 18
@@ -35,7 +36,7 @@ func printInfoValue(key string, values ...string) {
 
 	str := fmt.Sprintf(Bold("%-16s: "), key)
 	if len(values) == 0 || (len(values) == 1 && values[0] == "") {
-		fmt.Fprintf(os.Stdout, "%s%s\n", str, "None")
+		fmt.Fprintf(w, "%s%s\n", str, "None")
 
 		return
 	}
@@ -57,7 +58,7 @@ func printInfoValue(key string, values ...string) {
 		cols += len(value)
 	}
 
-	fmt.Println(str)
+	fmt.Fprintln(w, str)
 }
 
 // Formats a unix timestamp to ISO 8601 date (Mon 02 Jan 2006 03:04:05 PM MST).

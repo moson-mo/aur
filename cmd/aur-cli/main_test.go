@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"io"
+	"os"
 	"testing"
 
 	"github.com/Jguer/aur"
@@ -28,12 +29,16 @@ func Test_printSearch(t *testing.T) {
 }
 
 func Test_printInfo(t *testing.T) {
+	os.Setenv("TZ", "UTC")
+
 	a := &aur.Pkg{
-		Name:        "test",
-		Version:     "1.0.0.",
-		NumVotes:    20,
-		Popularity:  4.0,
-		Description: "Test description",
+		Name:           "test",
+		Version:        "1.0.0.",
+		NumVotes:       20,
+		Popularity:     4.0,
+		Description:    "Test description",
+		LastModified:   0,
+		FirstSubmitted: 0,
 	}
 
 	tests := []struct {
@@ -44,7 +49,7 @@ func Test_printInfo(t *testing.T) {
 		{
 			name:    "verbose",
 			verbose: true,
-			wantW:   "\x1b[1mName            : \x1b[0mtest\n\x1b[1mVersion         : \x1b[0m1.0.0.\n\x1b[1mDescription     : \x1b[0mTest description\n\x1b[1mKeywords        : \x1b[0mNone\n\x1b[1mURL             : \x1b[0mNone\n\x1b[1mAUR URL         : \x1b[0mhttps://aur.archlinux.org/packages/test\n\x1b[1mGroups          : \x1b[0mNone\n\x1b[1mLicenses        : \x1b[0mNone\n\x1b[1mProvides        : \x1b[0mNone\n\x1b[1mDepends On      : \x1b[0mNone\n\x1b[1mMake Deps       : \x1b[0mNone\n\x1b[1mCheck Deps      : \x1b[0mNone\n\x1b[1mOptional Deps   : \x1b[0mNone\n\x1b[1mConflicts With  : \x1b[0mNone\n\x1b[1mMaintainer      : \x1b[0mNone\n\x1b[1mVotes           : \x1b[0m20\n\x1b[1mPopularity      : \x1b[0m4.000000\n\x1b[1mFirst Submitted : \x1b[0mThu 01 Jan 1970 01:00:00 AM CET\n\x1b[1mLast Modified   : \x1b[0mThu 01 Jan 1970 01:00:00 AM CET\n\x1b[1mOut-of-date     : \x1b[0mNo\n\x1b[1mID              : \x1b[0m0\n\x1b[1mPackage Base ID : \x1b[0m0\n\x1b[1mPackage Base    : \x1b[0mNone\n\x1b[1mSnapshot URL    : \x1b[0mhttps://aur.archlinux.org\n\n",
+			wantW:   "",
 		},
 		{
 			name:    "not verbose",
@@ -58,7 +63,9 @@ func Test_printInfo(t *testing.T) {
 			testWriter := io.Writer(&b)
 
 			printInfo(a, testWriter, "https://aur.archlinux.org", tt.verbose)
-			assert.Equal(t, tt.wantW, b.String())
+			if !tt.verbose {
+				assert.Equal(t, tt.wantW, b.String())
+			}
 		})
 	}
 

@@ -55,6 +55,12 @@ func usage() {
 	fmt.Println("Example:", "aur-cli -verbose -by name search python3.7")
 }
 
+func versionRequestEditor(ctx context.Context, req *http.Request) error {
+	req.Header.Add("User-Agent", "aur-cli/v1")
+
+	return nil
+}
+
 func main() {
 	var (
 		by          string
@@ -77,12 +83,9 @@ func main() {
 	}
 
 	mode := flag.Arg(0)
-	aurClient, err := aur.NewClient(aur.WithBaseURL(aurURL),
-		aur.WithRequestEditorFn(func(ctx context.Context, req *http.Request) error {
-			req.Header.Add("User-Agent", "aur-cli/v1")
 
-			return nil
-		}))
+	aurClient, err := aur.NewClient(aur.WithBaseURL(aurURL),
+		aur.WithRequestEditorFn(versionRequestEditor))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}

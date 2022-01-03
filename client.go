@@ -139,7 +139,7 @@ func (c *Client) applyEditors(ctx context.Context, req *http.Request, additional
 func newAURRPCRequest(ctx context.Context, baseURL string, values url.Values) (*http.Request, error) {
 	values.Set("v", "5")
 
-	req, err := http.NewRequestWithContext(ctx, "GET", baseURL+values.Encode(), nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", baseURL+values.Encode(), http.NoBody)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
@@ -182,13 +182,13 @@ func parseRPCResponse(resp *http.Response) ([]Pkg, error) {
 // Search queries the AUR DB with an optional By field.
 // Use By.None for default query param (name-desc).
 func (c *Client) Search(ctx context.Context, query string, by By, reqEditors ...RequestEditorFn) ([]Pkg, error) {
-	v := url.Values{"type": []string{"search"}, "arg": []string{query}}
+	values := url.Values{"type": []string{"search"}, "arg": []string{query}}
 
 	if by != None {
-		v.Set("by", by.String())
+		values.Set("by", by.String())
 	}
 
-	return c.get(ctx, v, reqEditors)
+	return c.get(ctx, values, reqEditors)
 }
 
 // Info shows info for one or multiple packages.

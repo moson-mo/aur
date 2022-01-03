@@ -27,7 +27,7 @@ func getColumnCount() int {
 	return defaultColumnCount
 }
 
-func printInfoValue(w io.Writer, key string, values ...string) {
+func printInfoValue(writer io.Writer, key string, values ...string) {
 	// 16 (text) + 1 (:) + 1 ( )
 	const (
 		keyLength  = 18
@@ -36,7 +36,7 @@ func printInfoValue(w io.Writer, key string, values ...string) {
 
 	str := fmt.Sprintf(Bold("%-16s: "), key)
 	if len(values) == 0 || (len(values) == 1 && values[0] == "") {
-		fmt.Fprintf(w, "%s%s\n", str, "None")
+		fmt.Fprintf(writer, "%s%s\n", str, "None")
 
 		return
 	}
@@ -58,7 +58,7 @@ func printInfoValue(w io.Writer, key string, values ...string) {
 		cols += len(value)
 	}
 
-	fmt.Fprintln(w, str)
+	fmt.Fprintln(writer, str)
 }
 
 // Formats a unix timestamp to ISO 8601 date (Mon 02 Jan 2006 03:04:05 PM MST).

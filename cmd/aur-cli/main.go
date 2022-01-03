@@ -157,42 +157,42 @@ func printSearch(a *aur.Pkg, w io.Writer) {
 }
 
 // PrintInfo prints package info like pacman -Si.
-func printInfo(a *aur.Pkg, w io.Writer, aurURL string, verbose bool) {
-	printInfoValue(w, "Name", a.Name)
-	printInfoValue(w, "Version", a.Version)
-	printInfoValue(w, "Description", a.Description)
+func printInfo(pkg *aur.Pkg, writer io.Writer, aurURL string, verbose bool) {
+	printInfoValue(writer, "Name", pkg.Name)
+	printInfoValue(writer, "Version", pkg.Version)
+	printInfoValue(writer, "Description", pkg.Description)
 
 	if verbose {
-		printInfoValue(w, "Keywords", a.Keywords...)
-		printInfoValue(w, "URL", a.URL)
-		printInfoValue(w, "AUR URL", strings.TrimRight(aurURL, "/")+"/packages/"+a.Name)
+		printInfoValue(writer, "Keywords", pkg.Keywords...)
+		printInfoValue(writer, "URL", pkg.URL)
+		printInfoValue(writer, "AUR URL", strings.TrimRight(aurURL, "/")+"/packages/"+pkg.Name)
 
-		printInfoValue(w, "Groups", a.Groups...)
-		printInfoValue(w, "Licenses", a.License...)
-		printInfoValue(w, "Provides", a.Provides...)
-		printInfoValue(w, "Depends On", a.Depends...)
-		printInfoValue(w, "Make Deps", a.MakeDepends...)
-		printInfoValue(w, "Check Deps", a.CheckDepends...)
-		printInfoValue(w, "Optional Deps", a.OptDepends...)
-		printInfoValue(w, "Conflicts With", a.Conflicts...)
+		printInfoValue(writer, "Groups", pkg.Groups...)
+		printInfoValue(writer, "Licenses", pkg.License...)
+		printInfoValue(writer, "Provides", pkg.Provides...)
+		printInfoValue(writer, "Depends On", pkg.Depends...)
+		printInfoValue(writer, "Make Deps", pkg.MakeDepends...)
+		printInfoValue(writer, "Check Deps", pkg.CheckDepends...)
+		printInfoValue(writer, "Optional Deps", pkg.OptDepends...)
+		printInfoValue(writer, "Conflicts With", pkg.Conflicts...)
 
-		printInfoValue(w, "Maintainer", a.Maintainer)
-		printInfoValue(w, "Votes", fmt.Sprintf("%d", a.NumVotes))
-		printInfoValue(w, "Popularity", fmt.Sprintf("%f", a.Popularity))
-		printInfoValue(w, "First Submitted", formatTimeQuery(a.FirstSubmitted))
-		printInfoValue(w, "Last Modified", formatTimeQuery(a.LastModified))
+		printInfoValue(writer, "Maintainer", pkg.Maintainer)
+		printInfoValue(writer, "Votes", fmt.Sprintf("%d", pkg.NumVotes))
+		printInfoValue(writer, "Popularity", fmt.Sprintf("%f", pkg.Popularity))
+		printInfoValue(writer, "First Submitted", formatTimeQuery(pkg.FirstSubmitted))
+		printInfoValue(writer, "Last Modified", formatTimeQuery(pkg.LastModified))
 
-		if a.OutOfDate != 0 {
-			printInfoValue(w, "Out-of-date", formatTimeQuery(a.OutOfDate))
+		if pkg.OutOfDate != 0 {
+			printInfoValue(writer, "Out-of-date", formatTimeQuery(pkg.OutOfDate))
 		} else {
-			printInfoValue(w, "Out-of-date", "No")
+			printInfoValue(writer, "Out-of-date", "No")
 		}
 
-		printInfoValue(w, "ID", fmt.Sprintf("%d", a.ID))
-		printInfoValue(w, "Package Base ID", fmt.Sprintf("%d", a.PackageBaseID))
-		printInfoValue(w, "Package Base", a.PackageBase)
-		printInfoValue(w, "Snapshot URL", aurURL+a.URLPath)
+		printInfoValue(writer, "ID", fmt.Sprintf("%d", pkg.ID))
+		printInfoValue(writer, "Package Base ID", fmt.Sprintf("%d", pkg.PackageBaseID))
+		printInfoValue(writer, "Package Base", pkg.PackageBase)
+		printInfoValue(writer, "Snapshot URL", aurURL+pkg.URLPath)
 	}
 
-	fmt.Fprintln(w)
+	fmt.Fprintln(writer)
 }

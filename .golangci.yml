@@ -15,6 +15,7 @@ linters:
     - forbidigo
     - revive
     - goconst
+    - varnamelen
 
 linters-settings:
   govet:

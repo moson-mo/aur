@@ -43,6 +43,11 @@ aur-cli -verbose -by maintainer search jguer
 
 ```sh
 aur-cli info linux-git
+
+- Retrieve detailed information on the package "linux-git"
+
+```sh
+aur-cli -verbose info linux-git
 ```
 
 # go wrapper for the AUR JSON API

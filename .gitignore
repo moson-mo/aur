@@ -21,3 +21,6 @@
 
 # Mac
 .DS_store
+
+# editor
+.vscode

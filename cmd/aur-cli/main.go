@@ -19,7 +19,7 @@ const (
 )
 
 // UseColor determines if package will emit colors.
-var UseColor = true // nolint
+var UseColor = true //nolint
 
 const (
 	searchMode = "search"
@@ -121,7 +121,12 @@ func main() {
 	}
 }
 
-func getResults(aurClient *aur.Client, by, mode string) (results []aur.Pkg, err error) {
+func getResults(aurClient *aur.Client, by, mode string) ([]aur.Pkg, error) {
+	var (
+		results []aur.Pkg
+		err     error
+	)
+
 	switch mode {
 	case searchMode:
 		results, err = aurClient.Search(context.Background(), strings.Join(flag.Args()[1:], " "), getSearchBy(by))

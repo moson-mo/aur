@@ -11,7 +11,7 @@ import (
 
 const defaultColumnCount = 80
 
-var cachedColumnCount = -1 // nolint
+var cachedColumnCount = -1 //nolint
 
 func getColumnCount() int {
 	if cachedColumnCount > 0 {

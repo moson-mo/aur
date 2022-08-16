@@ -68,5 +68,4 @@ func Test_printInfo(t *testing.T) {
 			}
 		})
 	}
-
 }

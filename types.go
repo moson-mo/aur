@@ -21,6 +21,7 @@ type Pkg struct {
 	Popularity     float64  `json:"Popularity"`
 	OutOfDate      int      `json:"OutOfDate"`
 	Maintainer     string   `json:"Maintainer"`
+	Submitter      string   `json:"Submitter"`
 	FirstSubmitted int      `json:"FirstSubmitted"`
 	LastModified   int      `json:"LastModified"`
 	URLPath        string   `json:"URLPath"`
@@ -34,6 +35,7 @@ type Pkg struct {
 	Groups         []string `json:"Groups"`
 	License        []string `json:"License"`
 	Keywords       []string `json:"Keywords"`
+	CoMaintainers  []string `json:"CoMaintainers"`
 }
 
 func (p *Pkg) String() string {

@@ -34,6 +34,7 @@ const validPayload = `{
         "Popularity":24.595536,
         "OutOfDate":null,
         "Maintainer":"falconindy",
+		"Submitter":"someone",
         "FirstSubmitted":1293676237,
         "LastModified":1441804093,
         "URLPath":"\/cgit\/aur.git\/snapshot\/cower.tar.gz",
@@ -58,11 +59,11 @@ var validPayloadItems = []Pkg{{
 	ID: 229417, Name: "cower", PackageBaseID: 44921,
 	PackageBase: "cower", Version: "14-2", Description: "A simple AUR agent with a pretentious name",
 	URL: "http://github.com/falconindy/cower", NumVotes: 590, Popularity: 24.595536, OutOfDate: 0,
-	Maintainer: "falconindy", FirstSubmitted: 1293676237, LastModified: 1441804093,
+	Maintainer: "falconindy", Submitter: "someone", FirstSubmitted: 1293676237, LastModified: 1441804093,
 	URLPath: "/cgit/aur.git/snapshot/cower.tar.gz", Depends: []string{"curl", "openssl", "pacman", "yajl"},
 	MakeDepends: []string{"perl"}, CheckDepends: []string(nil), Conflicts: []string(nil),
 	Provides: []string(nil), Replaces: []string(nil), OptDepends: []string(nil),
-	Groups: []string(nil), License: []string{"MIT"}, Keywords: []string{},
+	Groups: []string(nil), License: []string{"MIT"}, Keywords: []string{}, CoMaintainers: []string(nil),
 }}
 
 func TestNewClient(t *testing.T) {

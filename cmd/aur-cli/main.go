@@ -197,6 +197,8 @@ func printInfo(pkg *aur.Pkg, writer io.Writer, aurURL string, verbose bool) {
 		printInfoValue(writer, "Conflicts With", pkg.Conflicts...)
 
 		printInfoValue(writer, "Maintainer", pkg.Maintainer)
+		printInfoValue(writer, "Submitter", pkg.Submitter)
+		printInfoValue(writer, "Co-Maintainers", pkg.CoMaintainers...)
 		printInfoValue(writer, "Votes", fmt.Sprintf("%d", pkg.NumVotes))
 		printInfoValue(writer, "Popularity", fmt.Sprintf("%f", pkg.Popularity))
 		printInfoValue(writer, "First Submitted", formatTimeQuery(pkg.FirstSubmitted))

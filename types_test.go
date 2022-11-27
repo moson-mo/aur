@@ -22,6 +22,9 @@ func TestBy_String(t *testing.T) {
 			name: "maintainer", by: Maintainer, want: "maintainer",
 		},
 		{
+			name: "submitter", by: Submitter, want: "submitter",
+		},
+		{
 			name: "depends", by: Depends, want: "depends",
 		},
 		{
@@ -35,6 +38,24 @@ func TestBy_String(t *testing.T) {
 		},
 		{
 			name: "checkdepends", by: CheckDepends, want: "checkdepends",
+		},
+		{
+			name: "provides", by: Provides, want: "provides",
+		},
+		{
+			name: "replaces", by: Replaces, want: "replaces",
+		},
+		{
+			name: "conflicts", by: Conflicts, want: "conflicts",
+		},
+		{
+			name: "keywords", by: Keywords, want: "keywords",
+		},
+		{
+			name: "groups", by: Groups, want: "groups",
+		},
+		{
+			name: "comaintainers", by: CoMaintainers, want: "comaintainers",
 		},
 		{
 			name: "default", by: None, want: "",

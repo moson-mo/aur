@@ -134,6 +134,15 @@ func TestGet(t *testing.T) {
 			},
 		},
 		{
+			desc: "Submitter",
+			query: &AURQuery{
+				By:       aur.Submitter,
+				Needles:  []string{"submitter"},
+				Contains: false,
+			},
+			expectedNames: []string{"testpackage"},
+		},
+		{
 			desc: "CheckDepends",
 			query: &AURQuery{
 				By:       aur.CheckDepends,
@@ -177,6 +186,51 @@ func TestGet(t *testing.T) {
 				Contains: true,
 			},
 			expectedNames: []string{"yay-bin"},
+		},
+		{
+			desc: "Conflicts",
+			query: &AURQuery{
+				By:       aur.Conflicts,
+				Needles:  []string{"conflicts1"},
+				Contains: false,
+			},
+			expectedNames: []string{"testpackage"},
+		},
+		{
+			desc: "Replaces",
+			query: &AURQuery{
+				By:       aur.Replaces,
+				Needles:  []string{"replaces1"},
+				Contains: false,
+			},
+			expectedNames: []string{"testpackage"},
+		},
+		{
+			desc: "Keywords",
+			query: &AURQuery{
+				By:       aur.Keywords,
+				Needles:  []string{"keyword1"},
+				Contains: false,
+			},
+			expectedNames: []string{"testpackage"},
+		},
+		{
+			desc: "Groups",
+			query: &AURQuery{
+				By:       aur.Groups,
+				Needles:  []string{"group1"},
+				Contains: false,
+			},
+			expectedNames: []string{"testpackage"},
+		},
+		{
+			desc: "CoMaintainers",
+			query: &AURQuery{
+				By:       aur.CoMaintainers,
+				Needles:  []string{"comaintainer1"},
+				Contains: false,
+			},
+			expectedNames: []string{"testpackage"},
 		},
 		{
 			desc: "Panic",

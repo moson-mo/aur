@@ -122,6 +122,8 @@ func toSearchBy(by aur.By) []string {
 		return []string{"Provides[]?"}
 	case aur.Maintainer:
 		return []string{"Maintainer"}
+	case aur.Submitter:
+		return []string{"Submitter"}
 	case aur.Depends:
 		return []string{"Depends[]?"}
 	case aur.MakeDepends:
@@ -130,6 +132,16 @@ func toSearchBy(by aur.By) []string {
 		return []string{"OptDepends[]?"}
 	case aur.CheckDepends:
 		return []string{"CheckDepends[]?"}
+	case aur.Conflicts:
+		return []string{"Conflicts[]?"}
+	case aur.Replaces:
+		return []string{"Replaces[]?"}
+	case aur.Keywords:
+		return []string{"Keywords[]?"}
+	case aur.Groups:
+		return []string{"Groups[]?"}
+	case aur.CoMaintainers:
+		return []string{"CoMaintainers[]?"}
 	default:
 		panic("invalid By")
 	}
